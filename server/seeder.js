@@ -4,7 +4,7 @@ const User = require('./models/User');
 const Product = require('./models/Product');
 const connectDB = require('./config/db');
 
-dotenv.config();
+dotenv.config({ path: './server/.env' });
 connectDB();
 
 const products = [
