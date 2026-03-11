@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
+import { fetchProducts } from '../api';
 import './Home.css';
 
-const MOCK_PRODUCTS = [
-  { _id: '1', name: 'Premium Wireless Headphones', price: 299, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800', category: 'Electronics' },
-  { _id: '2', name: 'Minimalist Watch', price: 150, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800', category: 'Accessories' },
-  { _id: '3', name: 'Smart Home Speaker', price: 199, image: 'https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=800', category: 'Electronics' },
-  { _id: '4', name: 'Leather Carryall', price: 350, image: 'https://images.unsplash.com/photo-1547949003-9792a18a2601?w=800', category: 'Fashion' },
-];
-
 const Home = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        const { data } = await fetchProducts();
+        setProducts(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setLoading(false);
+      }
+    };
+    getProducts();
+  }, []);
+
   return (
     <div className="home-page">
       <section className="hero container">
@@ -32,11 +43,19 @@ const Home = () => {
           <h2>Featured Products</h2>
           <a href="/shop">View All</a>
         </div>
-        <div className="product-grid">
-          {MOCK_PRODUCTS.map(product => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>Loading premium products...</div>
+        ) : (
+          <div className="product-grid">
+            {products.length > 0 ? (
+              products.map(product => (
+                <ProductCard key={product._id} product={product} />
+              ))
+            ) : (
+              <p>No products found. Start by adding some in the dashboard!</p>
+            )}
+          </div>
+        )}
       </section>
     </div>
   );
